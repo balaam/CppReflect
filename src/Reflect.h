@@ -45,7 +45,12 @@ template <typename TYPE> void DestructObject(void* object)
 template <typename TYPE>
 ReflectType* Reflect::CreateType(const std::string& name)
 {
-    return new ReflectType(name);
+    ReflectType* reflectType = new
+        ReflectType(name,
+                    ConstructObject<TYPE>,
+                    DestructObject<TYPE>,
+                    sizeof(TYPE));
+    return reflectType;
 }
 
 #endif

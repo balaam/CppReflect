@@ -5,9 +5,11 @@
 
 int main()
 {
-    printf("Hello");
+    printf("Hello\n");
     ReflectType * t = Reflect::Instance().CreateType<Example>("Example");
-
+    printf("%s\n", t->Name().c_str());
+    Example* e  = (Example*)t->Create();
+    printf("%s\n", e->Test());
     // What do want to happen?
     // Want to get a type descriptor
     // const Meta<Example>& meta = Reflect.Instance():GetMeta("Example")

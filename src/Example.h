@@ -4,7 +4,7 @@
 class Example
 {
     public:
-
+        const char* Test() { return "Hello from example"; }
 };
 
 #endif
