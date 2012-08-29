@@ -2,9 +2,8 @@
 #include <vector>
 #include <string>
 #include <sstream>
-//
-// Run with g++ main.cpp -o test
-//
+
+#include "Reflect.h"
 
 struct Test
 {
@@ -13,95 +12,55 @@ public:
     const char* string;
 };
 
-// 1. First go, but having thrown the type away
-//    I was stuck
-// template<class T>
-// class Field
+// What I'd like to do
+//
+// Reflect reflect(Test())
+// reflect.AddField("num", &Test::num)
+//
+// Test t;
+// t.num = 12;
+//
+//
+//
+// int* num = (int*)reflect.GetPtr(t,"num");
+
+// void* Reflect::GetPtr(T instance, "num")
 // {
-// private:
-//     const char* mName;
-//     void* T::* mPointer;
-// public:
-//     const char* Name() { return mName; }
-//     Field(const char* name, void* T::* pointer) :
-//         mName(name),
-//         mPointer(pointer)
-//     {}
-// };
+//     foreach field do
+//       if field.name == "num" then
+//           return field:GetPtr(instance)
+//     return null;
+// }
+//
+// But all fields are abstract
+// The parent class is not templated
+// Templated functions can't be overload!
+// Could cast it to it's base
+// Field f;
+// var stripped = FieldImpl<Test, int>(f)
+// But then I'd need a second type :(
+//
+// I could take in a meta class and work from there
+// GetPointer(Reflect f, "num")
+// But that needs to wrap the original type up!
+// Which brings me back to what I was doing eariler.
 
-// Abstract class, so children can have various types
-// We can have a list of abstract classes
-class Field
-{
-public:
-    virtual ~Field() {}
-    const char* Name() const { return mName; }
-    // This could be reflect ... probably!
-    virtual std::string ToString(void* instance) const = 0;
-protected:
-    Field(const char* name)  :
-        mName(name) {}
-private:
-    const char* mName;
-};
+// Next steps look at the handler
+// and implement something simialr
+// Look particularly at the inner class
+// template specialisation implementations
 
-
-template<typename CLASS, typename TYPE>
-class FieldImpl : public Field
-{
-private:
-    TYPE CLASS::* mPointer;
-public:
-    FieldImpl(const char* name,  TYPE CLASS::* pointer):
-        Field(name),
-        mPointer(pointer)
-        {}
-
-    virtual std::string ToString(void* instance) const
-    {
-        // Throwing away the type can be avoided
-        // but this works as proof of concept.
-        CLASS* typedInstance = (CLASS*) instance;
-        std::stringstream ss;
-        ss << "[" << Name() << "]: "
-        << (*typedInstance).*mPointer;
-        return ss.str();
-    }
-
-};
-
-
-// You couldn't have an array of these
-// But if they implemented an interface
-// you could
-template<typename T>
-class Reflect
-{
-public:
-    std::vector< Field* > mFields;
-
-    void Print(T* instance)
-    {
-        typename std::vector< Field* >::iterator iter;
-        for (iter = mFields.begin();
-             iter != mFields.end(); ++iter)
-        {
-            printf("%s\n", (*iter)->ToString((void*)instance).c_str());
-        }
-    }
-
-    template <typename CLASS, typename TYPE>
-    void AddField(const char* name, TYPE CLASS::* fieldPtr)
-    {
-        mFields.push_back(new FieldImpl<CLASS, TYPE>(name, fieldPtr));
-    }
-};
-
+//
+// // Prints 12 from the pointer
+// print("%d", num);
+//
+//
 
 
 int main()
 {
-    Reflect<Test> reflect;
+    Test t;
+    Reflect reflect(t);
     reflect.AddField("num", &Test::num);
     reflect.AddField("string", &Test::string);
 
