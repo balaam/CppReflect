@@ -59,10 +59,16 @@ public:
 
 int main()
 {
-    Test t;
-    Reflect reflect(t);
+    Reflect reflect;
     reflect.AddField("num", &Test::num);
     reflect.AddField("string", &Test::string);
+
+    Test testInstance;
+    testInstance.num = 66;
+    Field* numField = (Field*) reflect.GetField("num");
+    int num = (int)numField->GetPtr(&testInstance);
+
+    printf("NUM:%d\n", num);
 
     {
         Test testInstance;

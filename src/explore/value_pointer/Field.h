@@ -16,10 +16,7 @@ public:
     const char* Name() const { return mName; }
     // This could be reflect ... probably!
     virtual std::string ToString(void* instance) const = 0;
-  //  virtual void* GetPtr(const Reflect& /* instance*/) const { return NULL; }
-    // Needs to be an impl
-    // template<class T>
-    // virtual void* GetPtr(T& instance) { return NULL; }
+    virtual void* GetPtr(void* instance) { return NULL; }
 protected:
     Field(const char* name)  :
         mName(name) {}
@@ -40,11 +37,12 @@ public:
         mPointer(pointer)
         {}
 
-    // template<class T>
-    // virtual void* GetPtr(T& instance)
-    // {
-    //     return NULL;
-    // }
+
+    virtual void* GetPtr(void* instance)
+    {
+        CLASS* typedInstance = static_cast<CLASS*>(instance);
+        return (void*)((*typedInstance).*mPointer);
+    }
 
     virtual std::string ToString(void* instance) const
     {
