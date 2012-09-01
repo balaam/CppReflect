@@ -17,6 +17,7 @@ public:
     // This could be reflect ... probably!
     virtual std::string ToString(void* instance) const = 0;
     virtual void* GetPtr(void* instance) { return NULL; }
+    virtual void SetPtr(void* instance, void* value) {}
 protected:
     Field(const char* name)  :
         mName(name) {}
@@ -42,6 +43,12 @@ public:
     {
         CLASS* typedInstance = static_cast<CLASS*>(instance);
         return (void*)((*typedInstance).*mPointer);
+    }
+
+    virtual void SetPtr(void* instance, void* value)
+    {
+        CLASS* typedInstance = static_cast<CLASS*>(instance);
+        ((*typedInstance).*mPointer) = (TYPE)value;
     }
 
     virtual std::string ToString(void* instance) const
